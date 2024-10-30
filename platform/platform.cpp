@@ -426,4 +426,127 @@ unsigned char gamedll::EVILS::Move(float gear, bool change_path, float path_ex, 
 
 ///////////////////////////////
 
+//HERO ***********************
 
+void gamedll::HERO::Release()
+{
+	delete this;
+}
+bool gamedll::HERO::GetFlag(unsigned char which_flag) const
+{
+	return flags & which_flag;
+}
+void gamedll::HERO::SetFlag(unsigned char which_flag)
+{
+	flags |= which_flag;
+}
+void gamedll::HERO::NullFlag(unsigned char which_flag)
+{
+	flags &= ~which_flag;
+}
+int gamedll::HERO::GetFrame()
+{
+	--frame_delay;
+	if (frame_delay <= 0)
+	{
+		frame_delay = 3;
+		++frame;
+		if (frame > max_frames)frame = 0;
+	}
+	return frame;
+}
+unsigned char gamedll::HERO::Move(float gear, bool change_path, float path_ex, float path_ey)
+{
+	flags = 0b00000000;
+	if (change_path)SetPathInfo(path_ex, path_ey);
+	float current_speed = speed + gear / 10;
+
+	if (vert_path)
+	{
+		if (dir == dirs::up)
+		{
+			y -= current_speed;
+			SetEdges();
+			if (ey <= sky)SetFlag(UP_FLAG);
+		}
+		else if (dir == dirs::down)
+		{
+			y += current_speed;
+			SetEdges();
+			if (y >= ground)SetFlag(DOWN_FLAG);
+		}
+	}
+	else if (hor_path)
+	{
+		if (dir == dirs::left)
+		{
+			x -= current_speed;
+			SetEdges();
+			if (ex <= -(2 * scr_width))SetFlag(LEFT_FLAG);
+		}
+		else if (dir == dirs::right)
+		{
+			x += current_speed;
+			SetEdges();
+			if (x >= 2 * scr_width)SetFlag(RIGHT_FLAG);
+		}
+	}
+	else
+	{
+		if (dir == dirs::left)
+		{
+			x -= current_speed;
+			y = x * slope + intercept;
+			SetEdges();
+			if (ex <= -(2 * scr_width))SetFlag(LEFT_FLAG);
+		}
+		else if (dir == dirs::right)
+		{
+			x += current_speed;
+			y = x * slope + intercept;
+			SetEdges();
+			if (ex <= 2 * scr_width)SetFlag(RIGHT_FLAG);
+		}
+	}
+
+	return flags;
+}
+
+//FACTORY **********************
+
+gamedll::CREATURE* gamedll::CreatureFactory(creatures which_creature, float start_x, float start_y)
+{
+	CREATURE* ret{ nullptr };
+
+	switch (which_creature)
+	{
+	case creatures::evil1:
+		ret = new EVILS(which_creature, start_x, start_y);
+		break;
+
+	case creatures::evil2:
+		ret = new EVILS(which_creature, start_x, start_y);
+		break;
+
+	case creatures::evil3:
+		ret = new EVILS(which_creature, start_x, start_y);
+		break;
+
+	case creatures::evil4:
+		ret = new EVILS(which_creature, start_x, start_y);
+		break;
+
+	case creatures::evil5:
+		ret = new EVILS(which_creature, start_x, start_y);
+		break;
+
+	case creatures::evil6:
+		ret = new EVILS(which_creature, start_x, start_y);
+		break;
+
+	case creatures::hero:
+		ret = new HERO(start_x, start_y);
+		break;
+	}
+	return ret;
+}

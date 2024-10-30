@@ -190,6 +190,23 @@ namespace gamedll
 			unsigned char Move(float gear, bool change_path, float path_ex, float path_ey) override;
 	};
 
+	class PLATFORM_API HERO :public CREATURE
+	{
+	protected:
+		HERO(float _x, float _y) :CREATURE(creatures::hero, _x, _y) {};
+
+	public:
+		friend CREATURE* CreatureFactory(creatures which_creature, float start_x, float start_y);
+
+		void Release() override;
+		bool GetFlag(unsigned char which_flag) const override;
+		void SetFlag(unsigned char which_flag) override;
+		void NullFlag(unsigned char which_flag) override;
+		int GetFrame() override;
+		unsigned char Move(float gear, bool change_path, float path_ex, float path_ey) override;
+
+	};
+
 	typedef CREATURE* Creature;
 
 }
